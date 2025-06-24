@@ -4,6 +4,7 @@ import (
 	"book-rental-app/config"
 	"book-rental-app/handler"
 	"book-rental-app/middleware"
+	"book-rental-app/model"
 	"book-rental-app/repository"
 	"book-rental-app/service"
 	"log"
@@ -32,13 +33,13 @@ func main() {
 	// 	&model.User{},
 	// )
 
-	// db.AutoMigrate(
-	// 	&model.Author{},
-	// 	&model.Genre{},
-	// 	&model.Book{},
-	// 	&model.Loan{},
-	// 	&model.User{},
-	// )
+	db.AutoMigrate(
+		&model.Author{},
+		&model.Genre{},
+		&model.Book{},
+		&model.Loan{},
+		&model.User{},
+	)
 
 	//repository
 	userRepository := repository.NewUserRepository(db)
