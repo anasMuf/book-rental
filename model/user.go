@@ -13,7 +13,7 @@ type User struct {
 	DateOfBirth   string     `gorm:"type:date" json:"date_of_birth"`
 	Password      string     `gorm:"not null" json:"password"`
 	LastLoginDate *time.Time `json:"last_login_date"`
-	JwtToken      string     `json:"jwt_token"`
+	JwtToken      *string    `json:"jwt_token"`
 	// Loans         []Loan    `gorm:"foreignKey:UserID" json:"loans"`
 	Loans []Loan `json:"loans"`
 	Model
