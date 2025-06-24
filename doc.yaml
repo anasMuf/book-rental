@@ -1,0 +1,163 @@
+openapi: "3.0.0"
+info:
+  title: "FTGO Phase 2 Graduade Challange 2 API Book Rental"
+  description: "Rest API Book Rental App"
+  version: "1.0"
+  contact:
+    name: "M Anas Mufti Akbar"
+servers:
+  - url: "http://localhost:8080"
+    description: "development/livecode"
+
+paths:
+  '/users/register':
+    post:
+      tags:
+        - user
+      summary: "register user baru"
+      description: "register user baru ke dalam aplikasi"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/registerUser"
+      responses:
+        201:
+          description: "response berhasil registrasi user baru"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  user_id:
+                    type: "integer"
+                    example: 1
+                  email:
+                    type: "string"
+                    example: "john.doe@example.com"
+        400:
+          $ref: "#/components/responses/badRequest"
+        500:
+          $ref: "#/components/responses/internalServerError"
+          
+  '/users/login':
+    post:
+      tags:
+        - user
+      summary: "login user yang sudah terdaftar"
+      description: "login user yang sebelumnya sudah berhasil melakukan registrasi, akan membalikan data akses token"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/loginUser"
+      responses:
+        200:
+          description: "response berhasil login"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  token:
+                    type: "string"
+                    example: "jwt_token_value"
+        400:
+          $ref: "#/components/responses/badRequest"
+        404:
+          $ref: "#/components/responses/notFound"
+        500:
+          $ref: "#/components/responses/internalServerError"
+
+components:
+  parameters:
+    authorization:
+      name: Authorization
+      description: "authorization key yang didapatkan ketika berhasil login"
+      in: header
+      schema:
+        type: "string"
+
+  schemas:
+    registerUser:
+      type: "object"
+      properties:
+
+        first_name:
+          type: "string"
+          default: "user"
+        last_name:
+          type: "string"
+          default: "1"
+        email:
+          type: "string"
+          default: "user2@mail.test"
+        address:
+          type: "string"
+          default: "address 1"
+        date_of_birth:
+          type: "string"
+          default: "1999-05-19"
+        password:
+          type: "string"
+          default: "asdasd123"
+      required:
+        - first_name
+        - last_name
+        - email
+        - address
+        - date_of_birth
+        - password
+
+    loginUser:
+      type: "object"
+      properties:
+        email:
+          type: "string"
+          default: "user2@mail.test"
+        password:
+          type: "string"
+          default: "asdasd123"
+      required:
+        - email
+        - password
+
+  responses:
+    internalServerError:
+      description: "internal server error; semua error lain seperti error bad request dan error not found"
+      content:
+        application/json:
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+                example: "internal server error"
+    badRequest:
+      description: "bad request error"
+      content:
+        application/json:
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+                example: "invalid request parameters"
+    notFound:
+      description: "not found error"
+      content:
+        application/json:
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+                example: "data not found"
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
