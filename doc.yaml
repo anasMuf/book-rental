@@ -5,6 +5,7 @@ info:
   version: "1.0"
   contact:
     name: "M Anas Mufti Akbar"
+
 servers:
   - url: "http://localhost:8080"
     description: "development/livecode"
@@ -28,19 +29,19 @@ paths:
           content:
             application/json:
               schema:
-                type: "object"
+                type: object
                 properties:
                   user_id:
-                    type: "integer"
+                    type: integer
                     example: 1
                   email:
-                    type: "string"
+                    type: string
                     example: "john.doe@example.com"
         400:
           $ref: "#/components/responses/badRequest"
         500:
           $ref: "#/components/responses/internalServerError"
-          
+
   '/users/login':
     post:
       tags:
@@ -59,10 +60,10 @@ paths:
           content:
             application/json:
               schema:
-                type: "object"
+                type: object
                 properties:
                   token:
-                    type: "string"
+                    type: string
                     example: "jwt_token_value"
         400:
           $ref: "#/components/responses/badRequest"
@@ -71,37 +72,166 @@ paths:
         500:
           $ref: "#/components/responses/internalServerError"
 
+  '/users/me':
+    get:
+      tags:
+        - user
+      summary: "ambil data user yang login"
+      description: ""
+      security:
+        - ApiKeyAuth: []
+      responses:
+        200:
+          description: "response berhasil ambil data user yang login"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/userMe"
+        404:
+          $ref: "#/components/responses/notFound"
+        500:
+          $ref: "#/components/responses/internalServerError"
+
+  '/books':
+    get:
+      tags:
+        - books
+      summary: "ambil semua data buku"
+      description: ""
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: genre
+          in: query
+          required: false
+          description: "genre_id"
+          schema:
+            type: integer
+            default: 1
+      responses:
+        200:
+          description: "response berhasil ambil semua data buku"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/book'
+        404:
+          $ref: "#/components/responses/notFound"
+        500:
+          $ref: "#/components/responses/internalServerError"
+
+  '/loans':
+    post:
+      tags:
+        - loans
+      summary: "user yang login melakukan pendaftaran pinjaman"
+      description: ""
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/loansReq"
+      responses:
+        200:
+          description: "response berhasil loan"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/loansRes"
+        400:
+          $ref: "#/components/responses/badRequest"
+        404:
+          $ref: "#/components/responses/notFound"
+        500:
+          $ref: "#/components/responses/internalServerError"
+
+  '/users':
+    get:
+      tags:
+        - user
+      summary: "ambil semua data user"
+      description: ""
+      responses:
+        200:
+          description: "response berhasil ambil semua data user"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"
+        404:
+          $ref: "#/components/responses/notFound"
+        500:
+          $ref: "#/components/responses/internalServerError"
+
+  '/genres':
+    get:
+      tags:
+        - genre
+      summary: "ambil semua data genre"
+      description: ""
+      responses:
+        200:
+          description: "response berhasil ambil semua data genre"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/genre"
+        404:
+          $ref: "#/components/responses/notFound"
+        500:
+          $ref: "#/components/responses/internalServerError"
+
+  '/authors':
+    get:
+      tags:
+        - author
+      summary: "ambil semua data author"
+      description: ""
+      responses:
+        200:
+          description: "response berhasil ambil semua data author"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/author"
+        404:
+          $ref: "#/components/responses/notFound"
+        500:
+          $ref: "#/components/responses/internalServerError"
+
 components:
-  parameters:
-    authorization:
-      name: Authorization
-      description: "authorization key yang didapatkan ketika berhasil login"
-      in: header
-      schema:
-        type: "string"
+  securitySchemes:
+    ApiKeyAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 
   schemas:
     registerUser:
-      type: "object"
+      type: object
       properties:
-
         first_name:
-          type: "string"
+          type: string
           default: "user"
         last_name:
-          type: "string"
+          type: string
           default: "1"
         email:
-          type: "string"
+          type: string
           default: "user2@mail.test"
         address:
-          type: "string"
+          type: string
           default: "address 1"
         date_of_birth:
-          type: "string"
+          type: string
           default: "1999-05-19"
         password:
-          type: "string"
+          type: string
           default: "asdasd123"
       required:
         - first_name
@@ -112,52 +242,197 @@ components:
         - password
 
     loginUser:
-      type: "object"
+      type: object
       properties:
         email:
-          type: "string"
+          type: string
           default: "user2@mail.test"
         password:
-          type: "string"
+          type: string
           default: "asdasd123"
       required:
         - email
         - password
 
+    user:
+      type: array
+      items:
+        $ref: "#/components/schemas/userMe"
+
+    userMe:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        address:
+          type: string
+        date_of_birth:
+          type: string
+        password:
+          type: string
+        last_login_date:
+          type: string
+        jwt_token:
+          type: string
+        loans:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        DeletedAt:
+          type: string
+
+    genre:
+      type: object
+      properties:
+        genre_id:
+          type: integer
+        name:
+          type: string
+        books:
+          type: object
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        DeletedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    author:
+      type: object
+      properties:
+        author_id:
+          type: integer
+        name:
+          type: string
+        books:
+          type: object
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        DeletedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    book:
+      type: object
+      properties:
+        book_id:
+          type: integer
+        genre_id:
+          type: integer
+        author_id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        min_age_restriction:
+          type: integer
+        cover_url:
+          type: string
+        loans:
+          type: object
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        DeletedAt:
+          type: string
+          format: date-time
+          nullable: true
+        genre:
+          $ref: "#/components/schemas/genre"
+        author:
+          $ref: "#/components/schemas/author"
+
+    loansReq:
+      type: object
+      properties:
+        book_id:
+          type: integer
+          default: 1
+        loan_duration:
+          type: integer
+          default: 10
+      required:
+        - book_id
+        - loan_duration
+
+    loansRes:
+      type: object
+      properties:
+        loan_id:
+          type: integer
+        user_id:
+          type: integer
+        user:
+          $ref: "#/components/schemas/userMe"
+        book_id:
+          type: integer
+        book:
+          $ref: "#/components/schemas/book"
+        loan_date:
+          type: string
+        due_date:
+          type: string
+        return_date:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        DeletedAt:
+          type: string
+
   responses:
     internalServerError:
-      description: "internal server error; semua error lain seperti error bad request dan error not found"
+      description: "internal server error"
       content:
         application/json:
           schema:
-            type: "object"
+            type: object
             properties:
               message:
-                type: "string"
+                type: string
                 example: "internal server error"
     badRequest:
       description: "bad request error"
       content:
         application/json:
           schema:
-            type: "object"
+            type: object
             properties:
               message:
-                type: "string"
+                type: string
                 example: "invalid request parameters"
     notFound:
       description: "not found error"
       content:
         application/json:
           schema:
-            type: "object"
+            type: object
             properties:
               message:
-                type: "string"
+                type: string
                 example: "data not found"
-
-  securitySchemes:
-    ApiKeyAuth:
-      type: apiKey
-      in: header
-      name: Authorization
